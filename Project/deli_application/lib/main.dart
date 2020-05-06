@@ -2,7 +2,10 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'bloc/cardListBloc.dart';
-import 'model/deliitem.dart';
+import 'model/deli_item.dart';
+import 'package:deliapplication/bloc/shoppingCartListColorTheme.dart';
+import 'package:deliapplication/shoppingcart.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -11,7 +14,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider (
       blocs: [
-        Bloc((i)=>CartListBloc())
+        Bloc((i)=>CartListBloc()),
+        Bloc((i) =>ColorBloc()),
       ],
       child: MaterialApp(
         // main app title
@@ -167,7 +171,6 @@ class ItemContainer extends StatelessWidget {
           content: Text('${deliItem.title} added to Cart'),
           duration: Duration(milliseconds: 200),
         );
-
         Scaffold.of(context).showSnackBar(snackBar);
       },
       child: Items(
@@ -328,30 +331,41 @@ class CategoryListItem extends StatelessWidget {
 class NewAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final CartListBloc block = BlocProvider.getBloc<CartListBloc>();
     return Container(
       margin: EdgeInsets.only(bottom: 15),
       child: Row (
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Icon(Icons.menu),
-          GestureDetector(
-            child: Container(
-              margin: EdgeInsets.all(20),
-              child: Text(
-                "0",
-                style: TextStyle (
-                  color: Colors.black,
-                ),
-              ),
-              padding: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: Colors.blue[200],
-                borderRadius: BorderRadius.circular(30)
-              ),
-            ),
-          ),
+          StreamBuilder(
+            stream: block.listStream,
+            builder: (context, snapshot) {
+              List<DeliItem> deliItems = snapshot.data;
+              int length = deliItems != null ? deliItems.length : 0;
+              return buildGestureDetector(length, context, deliItems);
+            },
+          )
         ],
       ),
+    );
+  }
+  GestureDetector buildGestureDetector (int length, BuildContext context, List<DeliItem> deliItems) {
+    return GestureDetector (
+      onTap: () {
+        if (length > 0) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => Cart()));
+        }
+        else
+          return;
+      },
+      child: Container(
+      margin: EdgeInsets.all(20),
+      child: Text(length.toString()),
+      padding: EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.blue[200], borderRadius: BorderRadius.circular(30)),
+    ),
     );
   }
 }
