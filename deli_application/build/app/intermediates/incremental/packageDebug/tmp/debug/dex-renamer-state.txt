@@ -1,0 +1,4 @@
+#Sat May 02 14:34:45 PDT 2020
+base.0=B\:\\Desktop\\School\\Spring 2020\\Mobile Project\\Project\\deli_application\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
